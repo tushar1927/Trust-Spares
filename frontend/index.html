@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Trust Spare</title>
+  <style>
+    body{font-family:Arial; padding:20px;}
+    #cart{position:fixed; top:10px; right:10px; background:#ffeb3b; padding:10px 15px; border-radius:20px; font-weight:bold; z-index:1000;}
+    .card{border:1px solid #ddd; padding:15px; margin:10px; border-radius:10px; display:inline-block; width:200px; vertical-align:top;}
+    .card h3{margin:5px 0;}
+    button{background:black; color:white; padding:8px 12px; border:none; cursor:pointer; border-radius:4px;}
+    a{color:black;}
+  </style>
+</head>
+<body>
+
+<div id="cart">Cart: <span id="count">0</span> | <a href="#" onclick="checkout()">Checkout via WhatsApp</a></div>
+
+<h1>Trust Spare</h1>
+<h2>Our Spare Parts</h2>
+<div id="products">Loading...</div>
+
+<script>
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+document.getElementById('count').innerText = cart.length;
+
+async function loadProducts(){
+  try{
+    const res = await fetch('http://localhost:5000/api/products');
+    const data = await res.json();
+    if(data.length==0){
+      document.getElementById('products').innerHTML='No products found. Add from admin page.';
+      return;
+    }
+    document.getElementById('products').innerHTML = data.map(p=>`
+      <div class="card">
+        <h3>${p.name}</h3>
+        <p>${p.company} - ${p.category}</p>
+        <p><b>Rs.${p.price}</b></p>
+        <button onclick="addToCart('${p.name}', ${p.price})">Add to Cart</button>
+      </div>
+    `).join('');
+  }catch(e){
+    document.getElementById('products').innerHTML='Backend band aahe! Port 5000 chalu thev.';
+  }
+}
+
+function addToCart(name, price){
+  cart.push({name, price});
+  localStorage.setItem('cart', JSON.stringify(cart));
+  document.getElementById('count').innerText = cart.length;
+  alert(name+' added!');
+}
+
+function checkout(){
+  if(cart.length==0){ alert('Cart empty - adhi product add kar'); return; }
+  let msg = 'Hello Trust Spare, I want to order:%0A';
+  cart.forEach(c=> msg+=`- ${c.name} Rs.${c.price}%0A`);
+  let total = cart.reduce((s,c)=>s+c.price,0);
+  msg+=`%0ATotal: Rs.${total}`;
+  window.open(`https://wa.me/917744011507?text=${msg}`, '_blank');
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>

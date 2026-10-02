@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Product - Trust Spare</title>
+<style>body{font-family:Arial; padding:20px;} input{display:block; margin:10px 0; padding:8px; width:250px;} button{padding:10px 15px; background:black; color:white; border:none; cursor:pointer;}</style>
+</head>
+<body>
+<h1>Add Product</h1>
+<input id="name" placeholder="Name e.g. Air Filter">
+<input id="company" placeholder="Company e.g. Honda">
+<input id="category" placeholder="Category e.g. Engine">
+<input id="price" type="number" placeholder="Price e.g. 450">
+<button onclick="addProduct()">Add</button>
+<p id="msg"></p>
+<a href="/index.html">Go to Home</a>
+
+<script>
+async function addProduct(){
+  const data = {
+    name: document.getElementById('name').value,
+    company: document.getElementById('company').value,
+    category: document.getElementById('category').value,
+    price: Number(document.getElementById('price').value),
+    stock: 10
+  };
+  if(!data.name || !data.price){ alert('Name and Price taka'); return; }
+  try{
+    const res = await fetch('http://localhost:5000/api/products', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    document.getElementById('msg').innerText = 'Added: ' + result.name + ' - Check Home page!';
+    alert('Product Added Successfully!');
+  }catch(e){
+    alert('Backend band aahe! 5000 chalu thev. '+e);
+  }
+}
+</script>
+</body>
+</html>
