@@ -1,67 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Trust Spare</title>
-  <style>
-    body{font-family:Arial; padding:20px;}
-    #cart{position:fixed; top:10px; right:10px; background:#ffeb3b; padding:10px 15px; border-radius:20px; font-weight:bold; z-index:1000;}
-    .card{border:1px solid #ddd; padding:15px; margin:10px; border-radius:10px; display:inline-block; width:200px; vertical-align:top;}
-    .card h3{margin:5px 0;}
-    button{background:black; color:white; padding:8px 12px; border:none; cursor:pointer; border-radius:4px;}
-    a{color:black;}
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trust Spare - Genuine Auto Spare Parts</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>body{font-family:'Poppins',sans-serif}</style>
 </head>
-<body>
-
-<div id="cart">Cart: <span id="count">0</span> | <a href="#" onclick="checkout()">Checkout via WhatsApp</a></div>
-
-<h1>Trust Spare</h1>
-<h2>Our Spare Parts</h2>
-<div id="products">Loading...</div>
-
+<body class="bg-gray-50">
+<!-- Navbar -->
+<nav class="bg-black text-white p-4 flex justify-between items-center sticky top-0 z-50">
+  <h1 class="text-xl font-bold">TRUST <span class="text-yellow-400">SPARE</span></h1>
+  <div class="flex gap-4 items-center">
+    <input id="search" placeholder="Search parts..." class="px-3 py-1.5 rounded text-black text-sm w-32 md:w-64">
+    <span id="cartCount" class="bg-yellow-400 text-black px-3 py-1 rounded-full font-bold text-sm">Cart: 0</span>
+  </div>
+</nav>
+<!-- Hero -->
+<div class="bg-gradient-to-r from-black to-gray-800 text-white p-8 md:p-16 text-center">
+  <h2 class="text-3xl md:text-5xl font-bold mb-2">Genuine Spare Parts</h2>
+  <p class="text-gray-300">For Bike, Car, Truck - Best Price in Pune</p>
+  <a href="#products" class="inline-block mt-6 bg-yellow-400 text-black px-8 py-3 rounded-full font-bold">Shop Now</a>
+</div>
+<!-- Products -->
+<div id="products" class="p-4 md:p-8 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-7xl mx-auto"></div>
+<!-- Checkout -->
+<div class="fixed bottom-4 right-4">
+  <button onclick="checkout()" class="bg-green-500 text-white px-6 py-3 rounded-full font-bold shadow-lg">Checkout via WhatsApp</button>
+</div>
 <script>
-let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-document.getElementById('count').innerText = cart.length;
-
-async function loadProducts(){
-  try{
-    const res = await fetch('http://localhost:5000/api/products');
-    const data = await res.json();
-    if(data.length==0){
-      document.getElementById('products').innerHTML='No products found. Add from admin page.';
-      return;
-    }
-    document.getElementById('products').innerHTML = data.map(p=>`
-      <div class="card">
-        <h3>${p.name}</h3>
-        <p>${p.company} - ${p.category}</p>
-        <p><b>Rs.${p.price}</b></p>
-        <button onclick="addToCart('${p.name}', ${p.price})">Add to Cart</button>
-      </div>
-    `).join('');
-  }catch(e){
-    document.getElementById('products').innerHTML='Backend band aahe! Port 5000 chalu thev.';
-  }
+const parts=[
+{name:"Brake Pad - Pulsar",price:450,cat:"Bike",img:"https://images.unsplash.com/photo-1558981852-426c6c22a060?w=300"},
+{name:"Oil Filter - Swift",price:350,cat:"Car",img:"https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=300"},
+{name:"Clutch Plate Set",price:2200,cat:"Car",img:"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=300"},
+{name:"Air Filter Truck",price:1200,cat:"Truck",img:"https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=300"},
+{name:"Spark Plug NGK",price:180,cat:"Bike",img:"https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9?w=300"},
+{name:"Chain Sprocket Kit",price:1800,cat:"Bike",img:"https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=300"},
+{name:"Headlight Bulb",price:250,cat:"All",img:"https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=300"},
+{name:"Bumper - Alto",price:3500,cat:"Car",img:"https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=300"},
+];
+let cart=0,cartItems=[];
+const grid=document.getElementById('products');
+function render(filter=""){
+  grid.innerHTML="";
+  parts.filter(p=>p.name.toLowerCase().includes(filter.toLowerCase())).forEach((p,i)=>{
+    grid.innerHTML+=`<div class="bg-white rounded-xl shadow p-3 hover:shadow-xl transition"><img src="${p.img}" class="h-32 w-full object-cover rounded-lg"><div class="mt-2 font-semibold text-sm">${p.name}</div><div class="text-xs text-gray-500">${p.cat}</div><div class="flex justify-between items-center mt-2"><span class="font-bold text-green-600">₹${p.price}</span><button onclick="add(${i})" class="bg-black text-white text-xs px-3 py-1.5 rounded-full">Add +</button></div></div>`;
+  });
 }
-
-function addToCart(name, price){
-  cart.push({name, price});
-  localStorage.setItem('cart', JSON.stringify(cart));
-  document.getElementById('count').innerText = cart.length;
-  alert(name+' added!');
-}
-
+function add(i){cart++;cartItems.push(parts[i]);document.getElementById('cartCount').innerText='Cart: '+cart;}
 function checkout(){
-  if(cart.length==0){ alert('Cart empty - adhi product add kar'); return; }
-  let msg = 'Hello Trust Spare, I want to order:%0A';
-  cart.forEach(c=> msg+=`- ${c.name} Rs.${c.price}%0A`);
-  let total = cart.reduce((s,c)=>s+c.price,0);
-  msg+=`%0ATotal: Rs.${total}`;
-  window.open(`https://wa.me/917744011507?text=${msg}`, '_blank');
+  if(cart==0)return alert('Cart khali aahe!');
+  let msg=`Hi Trust Spare, mala he parts pahije:%0A${cartItems.map(p=>`- ${p.name} (Rs ${p.price})`).join('%0A')}%0ATotal Items: ${cart}`;
+  window.open(`https://wa.me/919999999999?text=${msg}`,'_blank');
 }
-
-loadProducts();
+document.getElementById('search').addEventListener('input',e=>render(e.target.value));
+render();
 </script>
-
 </body>
 </html>
