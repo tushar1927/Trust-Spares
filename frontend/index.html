@@ -51,7 +51,7 @@ function add(i){cart++;cartItems.push(parts[i]);document.getElementById('cartCou
 function checkout(){
   if(cart==0)return alert('Cart khali aahe!');
   let msg=`Hi Trust Spare, mala he parts pahije:%0A${cartItems.map(p=>`- ${p.name} (Rs ${p.price})`).join('%0A')}%0ATotal Items: ${cart}`;
-  window.open(`https://wa.me/919999999999?text=${msg}`,'_blank');
+  window.open(`https://wa.me/917744011507?text=${msg}`,'_blank');
 }
 document.getElementById('search').addEventListener('input',e=>render(e.target.value));
 render();
