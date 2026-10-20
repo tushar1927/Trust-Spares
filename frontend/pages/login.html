@@ -1,0 +1,9 @@
+<h1>Trust Spare</h1><h3>Welcome Back</h3>
+<input id="u" placeholder="Username or Email"><br>
+<input id="p" type="password" placeholder="Password"><br>
+<button onclick="signup()">Sign Up</button>
+<button onclick="login()">Login</button>
+<script>
+function signup(){ localStorage.setItem(document.getElementById('u').value, document.getElementById('p').value); alert("Signup Done! Ata Login kara"); }
+function login(){ if(localStorage.getItem(document.getElementById('u').value)===document.getElementById('p').value){ window.location.href="index.html"; } else alert("Wrong Password"); }
+</script>
